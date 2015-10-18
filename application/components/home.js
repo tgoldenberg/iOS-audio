@@ -4,6 +4,11 @@ let AudioPlayerManager = NativeModules.AudioPlayerManager;
 let AudioRecorderManager = NativeModules.AudioRecorderManager;
 let {AudioRecorder, AudioPlayer} = require('react-native-audio');
 let Icon = require('react-native-vector-icons/MaterialIcons');
+let Colors = {
+  darkBlue: '#0D47A1',
+  blue: '#1976D2',
+  lightBlue: '#BBDEFB',
+};
 let {
   Text,
   TextInput,
@@ -81,21 +86,61 @@ class Home extends React.Component{
 
 
   render() {
+    let recordingClass = this.state.recording ? styles.activeButtonText : styles.buttonText;
+    let playRecordingClass = this.state.playing ? styles.activeButtonText : styles.buttonText;
+
     return (
       <View style={styles.container}>
-        <View style={styles.controls}>
-          <Icon name="pause" size={30} color="white" />
-          <Icon name="play-arrow" size={30} color="white" />
-          <Icon name="stop" size={30} color="white" />
-          <Icon name="mic" size={30} color="white" />
-          <Icon name="equalizer" size={30} color="white" />
-          <Icon name="mic-off" size={30} color="white" />
-          <Icon name="volume-down" size={30} color="white" />
-          {this._renderButton("RECORD", () => {this._record()}, this.state.recording )}
-          {this._renderButton("STOP", () => {this._stop()} )}
-          {this._renderButton("PAUSE", () => {this._pause()} )}
-          {this._renderButton("PLAY", () => {this._play()}, this.state.playing )}
-          <Text style={styles.progressText}>{this.state.currentTime}s</Text>
+        <View style={styles.sampleAudio}>
+          <Text style={styles.sampleText}>Test Sample</Text>
+          <View style={styles.sampleIcons}>
+            <TouchableHighlight
+              underlayColor='transparent'
+              onPress={() => {
+                AudioPlayer.play('./en.lproj/english.mp3');
+              }}
+              >
+              <Icon style={styles.play} name="play-arrow" size={30} color="white" />
+            </TouchableHighlight>
+            <TouchableHighlight
+              underlayColor='transparent'
+              onPress={()=> {
+                console.log('AUDIO', AudioPlayer);
+                AudioPlayer.stop();
+              }}
+              >
+              <Icon style={styles.play} name="stop" size={30} color="white" />
+            </TouchableHighlight>
+          </View>
+        </View>
+        <View style={styles.recordAudio}>
+          <Text style={styles.sampleText}>Record Yourself and Compare</Text>
+          <View style={styles.sampleIcons}>
+            <TouchableHighlight underlayColor='transparent' style={styles.micButton} onPress={()=> {this._record()}}>
+              <Icon style={[styles.mic, recordingClass]} name="mic" size={50} color='white' />
+            </TouchableHighlight>
+            <Text style={styles.micText}>{this.state.currentTime}s</Text>
+          </View>
+        </View>
+        <View style={styles.recordPlayback}>
+          <View style={styles.playbackIcons}>
+            <TouchableHighlight underlayColor='transparent' onPress={()=> {this._stop()}}>
+              <Icon style={styles.play} name="stop" size={30} color='white' />
+            </TouchableHighlight>
+            <Text style={styles.recordingText}>Stop Recording</Text>
+          </View>
+          <View style={styles.playbackIcons}>
+            <TouchableHighlight underlayColor='transparent' onPress={()=> {this._pause()}}>
+              <Icon style={styles.play} name="pause" size={30} color='white' />
+            </TouchableHighlight>
+            <Text style={styles.recordingText}>Pause Recording</Text>
+          </View>
+          <View style={styles.playbackIcons}>
+            <TouchableHighlight underlayColor='transparent' onPress={()=> {this._play()}}>
+              <Icon style={[styles.play, playRecordingClass]} name="play-arrow" size={30} color='white' />
+            </TouchableHighlight>
+            <Text style={styles.recordingText}>Play Recording</Text>
+          </View>
         </View>
       </View>
     );
@@ -105,17 +150,77 @@ class Home extends React.Component{
 var styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#2b608a",
+    backgroundColor: Colors.darkBlue,
+  },
+  sampleAudio: {
+    flexDirection: 'column',
+    marginTop: 100,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  recordAudio: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    flex: .3,
+  },
+  recordPlayback: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    paddingLeft: 20,
+  },
+  recordingText: {
+    fontSize: 20,
+    color: 'white',
+    paddingTop: 8,
+  },
+  sampleText: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 10,
+  },
+  sampleIcons: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  playbackIcons: {
+    flexDirection: 'row',
+    marginTop: 10,
+  },
+  micButton: {
+    height: 80,
+  },
+  play: {
+    backgroundColor: Colors.blue,
+    height: 40,
+    width: 40,
+    padding: 4,
+    marginRight: 10,
+    borderRadius: 4,
+  },
+  mic: {
+    height: 70,
+    width: 70,
+    backgroundColor: Colors.blue,
+    padding: 9,
+    borderRadius: 4,
+    marginTop: 10,
   },
   controls: {
     justifyContent: 'center',
     alignItems: 'center',
-    flex: 1,
   },
   progressText: {
     paddingTop: 50,
     fontSize: 50,
     color: "#fff"
+  },
+  micText: {
+    fontSize: 25,
+    color: 'white',
+    paddingTop: 30,
+    marginLeft: 20,
   },
   button: {
     padding: 20
@@ -124,11 +229,9 @@ var styles = StyleSheet.create({
     color: '#eee'
   },
   buttonText: {
-    fontSize: 20,
     color: "#fff"
   },
   activeButtonText: {
-    fontSize: 20,
     color: "#B81F00"
   }
 
