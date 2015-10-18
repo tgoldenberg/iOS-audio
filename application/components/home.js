@@ -56,7 +56,7 @@ class Home extends React.Component{
     if (this.state.recording)
       AudioRecorder.pauseRecording();
     else if (this.state.playing)
-      AudioPlayer.pausePlaying();
+      AudioRecorder.stopPlaying();
   }
 
   _stop(){
@@ -106,6 +106,7 @@ class Home extends React.Component{
               underlayColor='transparent'
               onPress={()=> {
                 console.log('AUDIO', AudioPlayer);
+                console.log('RECORDER', AudioRecorder);
                 AudioPlayer.stop();
               }}
               >
