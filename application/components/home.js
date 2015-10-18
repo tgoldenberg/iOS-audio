@@ -3,6 +3,7 @@ let {NativeModules, NativeAppEventEmitter} = require('react-native');
 let AudioPlayerManager = NativeModules.AudioPlayerManager;
 let AudioRecorderManager = NativeModules.AudioRecorderManager;
 let {AudioRecorder, AudioPlayer} = require('react-native-audio');
+let Icon = require('react-native-vector-icons/MaterialIcons');
 let {
   Text,
   TextInput,
@@ -50,7 +51,7 @@ class Home extends React.Component{
     if (this.state.recording)
       AudioRecorder.pauseRecording();
     else if (this.state.playing)
-      AudioRecorder.pausePlaying();
+      AudioPlayer.pausePlaying();
   }
 
   _stop(){
@@ -83,6 +84,13 @@ class Home extends React.Component{
     return (
       <View style={styles.container}>
         <View style={styles.controls}>
+          <Icon name="pause" size={30} color="white" />
+          <Icon name="play-arrow" size={30} color="white" />
+          <Icon name="stop" size={30} color="white" />
+          <Icon name="mic" size={30} color="white" />
+          <Icon name="equalizer" size={30} color="white" />
+          <Icon name="mic-off" size={30} color="white" />
+          <Icon name="volume-down" size={30} color="white" />
           {this._renderButton("RECORD", () => {this._record()}, this.state.recording )}
           {this._renderButton("STOP", () => {this._stop()} )}
           {this._renderButton("PAUSE", () => {this._pause()} )}
