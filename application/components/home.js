@@ -4,11 +4,14 @@ let AudioPlayerManager = NativeModules.AudioPlayerManager;
 let AudioRecorderManager = NativeModules.AudioRecorderManager;
 let {AudioRecorder, AudioPlayer} = require('react-native-audio');
 let Icon = require('react-native-vector-icons/MaterialIcons');
+let GL = require("gl-react-native");
+
 let Colors = {
   darkBlue: '#0D47A1',
   blue: '#1976D2',
   lightBlue: '#BBDEFB',
 };
+
 let {
   Text,
   TextInput,
@@ -17,6 +20,7 @@ let {
   StyleSheet,
   ScrollView,
 } = React;
+
 
 class Home extends React.Component{
   constructor(props) {
@@ -27,17 +31,21 @@ class Home extends React.Component{
       stoppedRecording: false,
       stoppedPlaying: false,
       playing: false,
-      finished: false
+      finished: false,
+      shaders: '',
     };
   }
   componentDidMount(){
+    console.log("GL", GL.Shaders);
+
     AudioRecorder.prepareRecordingAtPath('/test.caf');
     AudioRecorder.onProgress = (data) => {
+      console.log("DATA", data);
       this.setState({currentTime: Math.floor(data.currentTime)});
     };
     AudioRecorder.onFinished = (data) => {
       this.setState({finished: data.finished});
-      console.log(`Finished recording: ${data.finished}`);
+      console.log(`Finished recording: ${data.finished}`, data);
     }
   }
 
@@ -88,10 +96,24 @@ class Home extends React.Component{
   render() {
     let recordingClass = this.state.recording ? styles.activeButtonText : styles.buttonText;
     let playRecordingClass = this.state.playing ? styles.activeButtonText : styles.buttonText;
-
+    const shaders = GL.Shaders.create({
+      helloGL: {
+        frag: `
+    precision highp float;
+    varying vec2 uv;
+    void main () {
+      gl_FragColor = vec4(uv.x, uv.y, 0.5, 1.0);
+    }`
+      }
+    });
     return (
       <View style={styles.container}>
         <View style={styles.sampleAudio}>
+          <GL.View
+            shader={shaders.helloGL}
+            width={100}
+            height={100}
+          />
           <Text style={styles.sampleText}>Test Sample</Text>
           <View style={styles.sampleIcons}>
             <TouchableHighlight
@@ -107,6 +129,7 @@ class Home extends React.Component{
               onPress={()=> {
                 console.log('AUDIO', AudioPlayer);
                 console.log('RECORDER', AudioRecorder);
+                // console.log('WAVEFORM', waveform);
                 AudioPlayer.stop();
               }}
               >
