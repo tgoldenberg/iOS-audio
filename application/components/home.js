@@ -5,7 +5,7 @@ let AudioRecorderManager = NativeModules.AudioRecorderManager;
 let {AudioRecorder, AudioPlayer} = require('react-native-audio');
 let Icon = require('react-native-vector-icons/MaterialIcons');
 let GL = require("gl-react-native");
-
+// let Waveform = require('react-native-waveform');
 let Colors = {
   darkBlue: '#0D47A1',
   blue: '#1976D2',
@@ -32,11 +32,13 @@ class Home extends React.Component{
       stoppedPlaying: false,
       playing: false,
       finished: false,
-      shaders: '',
+      value: 0,
     };
   }
   componentDidMount(){
     console.log("GL", GL.Shaders);
+    console.log('NATIVE', NativeModules);
+    // console.log('WAVEFORM', new Waveform('./en.lproj/english.mp3'));
 
     AudioRecorder.prepareRecordingAtPath('/test.caf');
     AudioRecorder.onProgress = (data) => {
@@ -96,24 +98,11 @@ class Home extends React.Component{
   render() {
     let recordingClass = this.state.recording ? styles.activeButtonText : styles.buttonText;
     let playRecordingClass = this.state.playing ? styles.activeButtonText : styles.buttonText;
-    const shaders = GL.Shaders.create({
-      helloGL: {
-        frag: `
-    precision highp float;
-    varying vec2 uv;
-    void main () {
-      gl_FragColor = vec4(uv.x, uv.y, 0.5, 1.0);
-    }`
-      }
-    });
+
+    const { value } = this.state;
     return (
       <View style={styles.container}>
         <View style={styles.sampleAudio}>
-          <GL.View
-            shader={shaders.helloGL}
-            width={100}
-            height={100}
-          />
           <Text style={styles.sampleText}>Test Sample</Text>
           <View style={styles.sampleIcons}>
             <TouchableHighlight
